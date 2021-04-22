@@ -41,8 +41,11 @@ class ClientViewSet(viewsets.ViewSet):
                     else:
                         cliente = self.__get_by_telefone(value)
                     
-                    serializer = ClienteSerializer(cliente)
-                    return Response(serializer.data)
+                    if cliente is not None:
+                        serializer = ClienteSerializer(cliente)
+                        return Response(serializer.data)
+                    else:
+                        return Response(status=status.HTTP_404_NOT_FOUND)
                 else:
                     return Response(status=status.HTTP_403_FORBIDDEN)
             else:
