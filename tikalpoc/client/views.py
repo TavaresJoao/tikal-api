@@ -22,7 +22,7 @@ class ClientViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, queryparams=None):
-        # /api/clientes/<str:id>
+        # /api/clientes/<str:queryparams>
         if queryparams.isdigit():
             cliente = self.__get_by_id(queryparams)
             serializer = ClienteSerializer(cliente)
@@ -52,17 +52,17 @@ class ClientViewSet(viewsets.ViewSet):
             else:
                 return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def update(self, request, id=None):
-        # /api/clientes/<str:id>
-        cliente = Cliente.objects.get(id=id)
+    def update(self, request, queryparams=None):
+        # /api/clientes/<str:queryparams>
+        cliente = Cliente.objects.get(id=queryparams)
         serializer = ClienteSerializer(instance=cliente, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
-    def destroy(self, request, id=None):
-        # /api/clientes/<str:id>
-        cliente = Cliente.objects.get(id=id)
+    def destroy(self, request, queryparams=None):
+        # /api/clientes/<str:queryparams>
+        cliente = Cliente.objects.get(id=queryparams)
         cliente.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
