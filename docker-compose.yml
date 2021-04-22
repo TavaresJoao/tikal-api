@@ -1,0 +1,37 @@
+version: "3.7"
+services:
+
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: tikalpoc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    volumes: 
+      - tikalpoc-volume:/var/lib/postgresql/data
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "4040:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: email@email.com
+      PGADMIN_DEFAULT_PASSWORD: 123456
+    depends_on:
+      - db
+  
+  tikalpoc:
+    build: 
+      context: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./tikalpoc:/tikalpoc
+    command: python manage.py runserver 0.0.0.0:8080
+    depends_on:
+      - db
+
+volumes:
+    tikalpoc-volume:
