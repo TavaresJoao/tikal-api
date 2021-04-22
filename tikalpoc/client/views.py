@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import *
 from .serializers import *
+from django.db import connection
 
 
 class ClientViewSet(viewsets.ViewSet):
@@ -70,8 +71,12 @@ class ClientViewSet(viewsets.ViewSet):
     
     def __get_by_email(self, email=None):
         try:
-            email = Email.objects.raw('SELECT * FROM client_email WHERE email = %s', [email])[0]
-            cliente = Cliente.objects.raw('SELECT * FROM client_cliente WHERE email_id = %s', [email.id])[0]
+            email_id = -1
+            with connection.cursor() as cursor:
+                cursor.execute('SELECT id FROM client_email WHERE email = %s', [email])
+                email_id = cursor.fetchone()[0]
+            # email = Email.objects.raw('SELECT * FROM client_email WHERE email = %s', [email])[0]
+            cliente = Cliente.objects.raw('SELECT * FROM client_cliente WHERE email_id = %s', [email_id])[0]
             
             return cliente
         except:
@@ -79,8 +84,12 @@ class ClientViewSet(viewsets.ViewSet):
 
     def __get_by_telefone(self, telefone=None):
         try:
-            telefone = Email.objects.raw('SELECT * FROM client_telefone WHERE numero = %s', [telefone])[0]
-            cliente = Cliente.objects.raw('SELECT * FROM client_cliente WHERE telefone_id = %s', [telefone.id])[0]
+            telefone_id = -1
+            with connection.cursor() as cursor:
+                cursor.execute('SELECT id FROM client_telefone WHERE numero = %s', [telefone])
+                telefone_id = cursor.fetchone()[0]
+            # telefone = Email.objects.raw('SELECT * FROM client_telefone WHERE numero = %s', [telefone])[0]
+            cliente = Cliente.objects.raw('SELECT * FROM client_cliente WHERE telefone_id = %s', [telefone_id])[0]
             
             return cliente
         except:
